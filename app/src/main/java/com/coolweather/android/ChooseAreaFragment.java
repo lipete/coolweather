@@ -1,6 +1,7 @@
 package com.coolweather.android;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -79,6 +80,12 @@ public class ChooseAreaFragment extends Fragment {
                 } else if (currentLevel == LEVEL_CITY) {
                     mSelectedCity = mCityList.get(i);
                     queryCounties();
+                } else if (currentLevel == LEVEL_COUNTY) {
+                    String weatherId = mCountyList.get(i).getWeatherId();
+                    Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                    intent.putExtra("weather_id", weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
@@ -159,7 +166,7 @@ public class ChooseAreaFragment extends Fragment {
         showProgressDialog();
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
-            public void onFailure(okhttp3.Call call, IOException e) {
+            public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
                 //通过runOnUiThread()方法回到主线程处理逻辑
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -171,7 +178,7 @@ public class ChooseAreaFragment extends Fragment {
             }
 
             @Override
-            public void onResponse(okhttp3.Call call, Response response) throws IOException {
+            public void onResponse(@NonNull okhttp3.Call call, @NonNull Response response) throws IOException {
                 String responseText = response.body().string();
                 boolean result = false;
                 if ("province".equals(type)) {
